@@ -1,6 +1,10 @@
 package models
 
-import "time"
+import (
+	"time"
+
+	"github.com/gorilla/websocket"
+)
 
 type Chat struct {
 	ID          uint      `gorm:"primaryKey;column:id_chat" json:"id_chat"`
@@ -26,4 +30,12 @@ type ChatMessage struct {
 	Message  string    `gorm:"type:text;column:message" json:"message"`
 	SentAt   time.Time `gorm:"column:sent_at" json:"sent_at"`
 	IsRead   bool      `gorm:"default:false;column:is_read" json:"is_read"`
+}
+
+// Agregar al final:
+type ChatSession struct {
+	ClientID uint
+	Username string
+	Conn     *websocket.Conn
+	RoomID   string
 }

@@ -29,10 +29,16 @@ func main() {
 	}))
 
 	// Rutas públicas
-	r.GET("/ping", func(c *gin.Context) {
+	r.GET("/", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"message": "Gym Backend funcionando 🚀"})
 	})
-	r.POST("/auth/login", controllers.Login)
+	public := r.Group("/public")
+	{
+		public.GET("/rankings/crossfit", controllers.GetCrossfitRanking)
+		public.GET("/news", controllers.GetActiveNews)
+		public.POST("/auth/login", controllers.Login)
+		public.GET("/ws/:room", controllers.ChatWebSocket)
+	}
 
 	// Admin routes (TODO protegido)
 	adminRoutes := r.Group("/admin")
@@ -43,6 +49,19 @@ func main() {
 		adminRoutes.POST("/clients", controllers.RegisterClient)
 		adminRoutes.PUT("/clients/:id", controllers.UpdateClient)
 		adminRoutes.DELETE("/clients/:id", controllers.DeleteClient)
+
+		adminRoutes.POST("/trainers", controllers.RegisterTrainer)
+		adminRoutes.GET("/trainers", controllers.GetAllTrainers)
+
+		adminRoutes.POST("/subscriptions", controllers.CreateSubscription)
+		adminRoutes.GET("/subscriptions", controllers.GetSubscriptions)
+		adminRoutes.GET("/subscriptions/overdue", controllers.GetOverdueSubscriptions)
+
+		adminRoutes.POST("/payments", controllers.CreatePayment)
+		adminRoutes.GET("/payments", controllers.GetPayments)
+
+		adminRoutes.POST("/checkins", controllers.CreateCheckIn)
+		adminRoutes.GET("/checkins/today", controllers.GetTodayCheckIns)
 	}
 
 	log.Println("🚀 Servidor corriendo en http://localhost:8080")
